@@ -117,10 +117,11 @@ function buildPrompt(input: AnalysisInput, text: string): string {
     'Do not claim certainty or that a message is safe. Use needs-verification when ambiguous.',
     'Do not quote phone numbers, OTPs, account identifiers, or long message excerpts in evidence.',
     'Return only the structured JSON required by the response schema.',
+      input.metadata?.locale === 'ta' ? 'CRITICAL: The declared language is Tamil (ta). You MUST write all free-text fields (message, requestedAction, uncertainty) entirely in native Tamil script. Do not write them in English. Keep enum categories and keys in English.' : '',
     `Input type: ${input.inputType}`,
     `Declared language: ${input.metadata?.locale ?? 'unspecified'}`,
     `Message content (untrusted): ${JSON.stringify(text)}`,
-  ].join('\n');
+  ].filter(Boolean).join('\n');
 }
 
 function makeSdkRequest(apiKey: string): GeminiRequest {
