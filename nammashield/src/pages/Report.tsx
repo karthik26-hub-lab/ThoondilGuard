@@ -5,7 +5,7 @@ import { redactPII } from '../lib/detector';
 import { ShieldCheck, Info, Smartphone, Mail, Send, ChevronRight, AlertCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-const REGIONS = ['Adyar', 'Velachery', 'Thiruvanmiyur', 'Besant Nagar', 'Guindy', 'Taramani', 'Perungudi', 'Palavakkam', 'Other (South Chennai)'];
+const REGIONS = ['Adyar', 'Velachery', 'Thiruvanmiyur', 'Besant Nagar', 'Guindy', 'Taramani', 'Perungudi', 'Palavakkam', 'Other'];
 const CATEGORIES = ['Phishing Link', 'Job/Task Scam', 'Electricity Bill Scam', 'Loan App Harassment', 'Lottery/Prize', 'Other'];
 
 export function Report() {
@@ -17,6 +17,8 @@ export function Report() {
   const [text, setText] = useState(location.state?.text || '');
   const [region, setRegion] = useState('');
   const [category, setCategory] = useState('');
+  const [customRegion, setCustomRegion] = useState('');
+  const [customCategory, setCustomCategory] = useState('');
   const [submitted] = useState(false);
 
   // New states for the notification section
@@ -27,9 +29,11 @@ export function Report() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!text || !region || !category) return;
+    const finalRegion = region === 'Other' ? customRegion.trim() : region;
+    const finalCategory = category === 'Other' ? customCategory.trim() : category;
+    if (!text || !finalRegion || !finalCategory) return;
 
-    navigate('/report/verify', {state:{draft:{text:redactPII(text),region,category,risk:location.state?.risk||'User Reported'}}});
+    navigate('/report/verify', {state:{draft:{text:redactPII(text),region:finalRegion,category:finalCategory,risk:location.state?.risk||'User Reported'}}});
   };
 
   const handleSendNotification = (e: React.FormEvent) => {
@@ -310,32 +314,60 @@ export function Report() {
           </div>
 
           <div className="grid md:grid-cols-2 gap-5">
-            <div>
-              <label className="block text-sm font-medium text-black mb-2" htmlFor="region-select">{t("Your Neighborhood")}</label>
-              <select 
-                id="region-select"
-                required
-                value={region}
-                onChange={(e) => setRegion(e.target.value)}
-                className="w-full min-h-[48px] p-3 rounded-lg border border-stone-200 bg-stone-50 focus:ring-2 focus:ring-stone-500 outline-none text-black"
-              >
-                <option value="" disabled>{t("Select Neighborhood")}</option>
-                {REGIONS.map(r => <option key={r} value={r}>{t(r)}</option>)}
-              </select>
+            <div className="flex flex-col gap-3">
+              <div>
+                <label className="block text-sm font-medium text-black mb-2" htmlFor="region-select">{t("Your Neighborhood")}</label>
+                <select 
+                  id="region-select"
+                  required
+                  value={region}
+                  onChange={(e) => setRegion(e.target.value)}
+                  className="w-full min-h-[48px] p-3 rounded-lg border border-stone-200 bg-stone-50 focus:ring-2 focus:ring-stone-500 outline-none text-black"
+                >
+                  <option value="" disabled>{t("Select Neighborhood")}</option>
+                  {REGIONS.map(r => <option key={r} value={r}>{t(r)}</option>)}
+                </select>
+              </div>
+              {region === 'Other' && (
+                <div>
+                  <input
+                    type="text"
+                    required
+                    placeholder={t("Enter your neighborhood/place")}
+                    value={customRegion}
+                    onChange={(e) => setCustomRegion(e.target.value)}
+                    className="w-full min-h-[48px] p-3 rounded-lg border border-stone-200 bg-stone-50 focus:ring-2 focus:ring-stone-500 outline-none text-black"
+                  />
+                </div>
+              )}
             </div>
             
-            <div>
-              <label className="block text-sm font-medium text-black mb-2" htmlFor="category-select">{t("Scam Category")}</label>
-              <select 
-                id="category-select"
-                required
-                value={category}
-                onChange={(e) => setCategory(e.target.value)}
-                className="w-full min-h-[48px] p-3 rounded-lg border border-stone-200 bg-stone-50 focus:ring-2 focus:ring-stone-500 outline-none text-black"
-              >
-                <option value="" disabled>{t("Select Category")}</option>
-                {CATEGORIES.map(c => <option key={c} value={c}>{t(c)}</option>)}
-              </select>
+            <div className="flex flex-col gap-3">
+              <div>
+                <label className="block text-sm font-medium text-black mb-2" htmlFor="category-select">{t("Scam Category")}</label>
+                <select 
+                  id="category-select"
+                  required
+                  value={category}
+                  onChange={(e) => setCategory(e.target.value)}
+                  className="w-full min-h-[48px] p-3 rounded-lg border border-stone-200 bg-stone-50 focus:ring-2 focus:ring-stone-500 outline-none text-black"
+                >
+                  <option value="" disabled>{t("Select Category")}</option>
+                  {CATEGORIES.map(c => <option key={c} value={c}>{t(c)}</option>)}
+                </select>
+              </div>
+              {category === 'Other' && (
+                <div>
+                  <input
+                    type="text"
+                    required
+                    placeholder={t("Enter category")}
+                    value={customCategory}
+                    onChange={(e) => setCustomCategory(e.target.value)}
+                    className="w-full min-h-[48px] p-3 rounded-lg border border-stone-200 bg-stone-50 focus:ring-2 focus:ring-stone-500 outline-none text-black"
+                  />
+                </div>
+              )}
             </div>
           </div>
 
