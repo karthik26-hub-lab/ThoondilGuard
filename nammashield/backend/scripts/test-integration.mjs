@@ -1,6 +1,4 @@
 import assert from 'node:assert/strict';
-import {unlink} from 'node:fs/promises';
-import {resolve} from 'node:path';
 import {spawnSync} from 'node:child_process';
 process.env.APP_SECRET='integration-test-secret-only-abcdefghijklmnopqrstuvwxyz';
 process.env.CLIENT_ORIGIN='http://localhost:4190';process.env.GEMINI_API_KEY='';process.env.GEMINI_MODEL='';
@@ -46,14 +44,10 @@ const support=await call('/api/support-requests',{category:'Website problem',des
 assert.equal((await call('/api/admin/login',{username:'test-admin',password:'wrong'})).status,401);
 const login=await call('/api/admin/login',{username:'test-admin',password:'test-password-for-validation'});assert.equal(login.status,200);assert.match(login.cookie,/HttpOnly/);const cookie=login.cookie.split(';')[0];assert.equal((await call('/api/admin/session',undefined,cookie)).status,200);
 const uploadBody=new FormData();for(const [field,value] of Object.entries({category:'Website problem',description:'A screenshot for the administrator to inspect.',page:'/track',reportReference:'',channel:'portal'}))uploadBody.append(field,value);
-uploadBody.append('screenshot',new Blob([Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQIHWP4//8/AwAI/AL+XvbWAAAAAElFTkSuQmCC','base64')],{type:'image/png'}),'proof.png');
-const uploadResponse=await fetch(base+'/api/support-requests',{method:'POST',body:uploadBody});assert.equal(uploadResponse.status,201);
-const savedUpload=supportRequests.at(-1).screenshotUrl;assert.match(savedUpload,/^\/api\/admin\/attachments\/[a-f0-9]{32}$/);
-try{
-  const publicAttempt=await fetch(base+savedUpload);assert.equal(publicAttempt.status,401);
-  const residentAttempt=await fetch(base+savedUpload,{headers:{Cookie:cookie,Origin:'http://localhost:4180'}});assert.equal(residentAttempt.status,403);
-  const adminAttempt=await fetch(base+savedUpload,{headers:{Cookie:cookie,Origin:'http://localhost:4190'}});assert.equal(adminAttempt.status,200);assert.equal(adminAttempt.headers.get('content-type'),'image/png');assert.match(adminAttempt.headers.get('content-disposition'),/attachment/);
-}finally{await unlink(resolve('uploads',savedUpload.split('/').pop()));}
+uploadBody.append('screenshot',new Blob([Buffer.from('not an image')],{type:'image/png'}),'proof.png');
+const invalidUpload=await fetch(base+'/api/support-requests',{method:'POST',body:uploadBody});assert.equal(invalidUpload.status,422);
+assert.equal(supportRequests.length,1);
+// GridFS persistence requires a live MongoDB connection and is tested separately after deployment.
 assert.match(login.cookie,/SameSite=Strict/);assert.match(login.cookie,/Max-Age=7200/);
 assert.equal((await call('/api/admin/session',undefined,cookie,{Origin:'http://localhost:4180'})).status,403);
 assert.equal((await call('/api/admin/logout',{},cookie,{Origin:'http://localhost:4180'})).status,403);
@@ -77,5 +71,5 @@ assert.equal((await call('/api/reports/track',{reference:'TG-TEST',accessKey:'wr
 const tracked=await call('/api/reports/track',{reference:'TG-TEST',accessKey});assert.equal(tracked.status,200);assert.equal(tracked.body.contactHash,undefined);assert.equal(tracked.body.accessKey,undefined);
 const created=await call('/api/reports',{...body,text:'A new reported message'},'',{'Idempotency-Key':'new-report-key'});assert.equal(created.status,201);assert.match(created.body.receipt.reference,/^TG-/);assert.ok(created.body.receipt.accessKey);const newTracked=await call('/api/reports/track',{reference:created.body.receipt.reference,accessKey:created.body.receipt.accessKey});assert.equal(newTracked.status,200);assert.equal(newTracked.body.status,'New');
 assert.equal((await call('/api/admin/logout',{},cookie)).status,200);assert.equal((await call('/api/admin/session',undefined,cookie)).status,401);
-console.log('PASS: dedicated admin origins, idle/absolute session expiry, credential-change invalidation, cookie flags, attachment authentication, password checks, OTP wrong/replay, idempotent retry/conflict, private tracking access. In-memory database adapters; no live MongoDB or SMS/email calls.');
+console.log('PASS: dedicated admin origins, idle/absolute session expiry, credential-change invalidation, cookie flags, invalid attachment rejection, password checks, OTP wrong/replay, idempotent retry/conflict, private tracking access. In-memory database adapters; GridFS persistence requires a live MongoDB test. No SMS/email calls.');
 }finally{await new Promise(r=>server.close(r));}
