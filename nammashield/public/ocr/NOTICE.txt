@@ -1,0 +1,1 @@
+OCR: Tesseract.js and tesseract.js-core, Apache-2.0. English trained model from https://github.com/tesseract-ocr/tessdata_fast (Apache-2.0). This is a pretrained OCR resource; confirm organiser permission separately from the detector. No pretrained language model is used for scam detection.

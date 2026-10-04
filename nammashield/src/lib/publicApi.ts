@@ -1,0 +1,4 @@
+export const publicBase=(import.meta.env.VITE_BACKEND_URL||'').trim().replace(/\/+$/,'');
+export type PublicAlert={id:string;title:string;english:string;tamil:string;area:string;nextStep:string;expires?:string;updated:string};
+export async function getPublic(path:string):Promise<unknown>{const response=await fetch(publicBase+path,{cache:'no-store',signal:AbortSignal.timeout(15000)});if(!response.ok)throw Error('Information could not load. Please retry.');return response.json();}
+export function publicItems(value:unknown,key:string):PublicAlert[]{if(!value||typeof value!=='object')throw Error('Invalid response');const items=(value as Record<string,unknown>)[key];if(!Array.isArray(items)||items.some(x=>!x||typeof x!=='object'||['id','title','english','tamil','area','nextStep','updated'].some(k=>typeof x[k]!=='string')))throw Error('Invalid public information');return items as PublicAlert[];}

@@ -1,0 +1,17 @@
+import mongoose from 'mongoose';
+const challenge=new mongoose.Schema({id:{type:String,unique:true},contactHash:String,contactPlaintext:String,channel:String,maskedDestination:String,codeHash:String,attempts:{type:Number,default:0},verified:{type:Boolean,default:false},submissionKey:String,expiresAt:Date,createdAt:{type:Date,default:Date.now}});
+challenge.index({expiresAt:1},{expireAfterSeconds:0});challenge.index({contactHash:1,createdAt:-1});
+export const Verification=mongoose.model('PortalVerification',challenge);
+const report=new mongoose.Schema({id:{type:String,unique:true},contactHash:String,contactEmail:String,keyHash:String,idempotency:{type:String,unique:true},payloadHash:String,fingerprint:String,outcome:String,text:String,area:String,category:String,language:String,channel:String,concern:String,status:String,decision:String,notes:String,indicators:[String],findings:[String],contactVerified:Boolean,submissionFlag:String,submitted:String,version:{type:Number,default:0}}, {timestamps:true});
+report.index({contactHash:1,fingerprint:1},{unique:true});report.index({submitted:-1});
+export const PortalReport=mongoose.model('PortalReport',report);
+const alert=new mongoose.Schema({id:{type:String,unique:true},title:String,english:String,tamil:String,area:String,nextStep:String,expires:String,support:[String],state:String,updated:String,version:{type:Number,default:0}}, {timestamps:true});
+export const PortalAlert=mongoose.model('PortalAlert',alert);
+export const PortalGroup=mongoose.model('PortalGroup',new mongoose.Schema({indicator:{type:String,unique:true},decision:String,note:String}));
+export const PortalEvent=mongoose.model('PortalEvent',new mongoose.Schema({id:String,time:String,action:String,target:String,note:String}, {timestamps:true}));
+const supportRequest=new mongoose.Schema({id:{type:String,unique:true},category:String,description:String,page:String,reportReference:String,screenshotAttached:Boolean,screenshotUrl:String,channel:String,status:{type:String,default:'New'},adminNote:{type:String,default:''},createdAt:{type:Date,default:Date.now},updatedAt:{type:Date,default:Date.now}});
+supportRequest.index({createdAt:-1});
+export const PortalSupportRequest=mongoose.model('PortalSupportRequest',supportRequest);
+const session=new mongoose.Schema({tokenHash:{type:String,unique:true},expiresAt:Date,lastSeenAt:Date,credentialVersion:String});
+session.index({expiresAt:1},{expireAfterSeconds:0});
+export const AdminSession=mongoose.model('PortalAdminSession',session);

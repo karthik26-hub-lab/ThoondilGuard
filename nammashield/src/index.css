@@ -1,0 +1,79 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: 'Inter', 'Noto Sans Tamil', sans-serif;
+  --font-display: 'Manrope', 'Noto Sans Tamil', sans-serif;
+  --color-glass-light: rgba(255, 255, 255, 0.95);
+  --color-glass-border: rgba(0, 0, 0, 0.05);
+  --shadow-glass: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+}
+
+@layer base {
+  body {
+    @apply bg-[#F9F8F6] text-black antialiased selection:bg-indigo-100;
+    min-height: 100vh;
+  }
+  
+  /* Hide scrollbar globally for a seamless app-like feel */
+  ::-webkit-scrollbar {
+    display: none;
+  }
+  html {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+  }
+}
+
+.landing-section {
+  min-height: calc(100svh - 4rem);
+  display: flex;
+  align-items: center;
+  padding-block: clamp(4.5rem, 10svh, 7.5rem);
+  scroll-margin-top: 4rem;
+}
+
+.landing-section > div {
+  width: 100%;
+}
+
+.landing-section--compact {
+  min-height: 0;
+  padding-block: clamp(3.5rem, 7vw, 6rem);
+}
+
+.landing-section--community {
+  min-height: 0;
+  padding-block: clamp(4.5rem, 8vw, 6rem);
+}
+
+html[lang="ta"] body {
+  font-family: 'Noto Sans Tamil', sans-serif;
+  line-height: 1.65;
+}
+html[lang="ta"] h1, html[lang="ta"] h2, html[lang="ta"] h3,
+html[lang="ta"] h4, html[lang="ta"] button, html[lang="ta"] a {
+  letter-spacing: normal;
+  overflow-wrap: anywhere;
+}
+html[lang="ta"] h1 { font-size: clamp(1.75rem, 3.6vw, 3.5rem); line-height: 1.5; }
+html[lang="ta"] h2 { line-height: 1.5; }
+html[lang="ta"] p { line-height: 1.85; }
+html[lang="ta"] .landing-section { min-height: 0; padding-block: clamp(3.5rem, 6vw, 5rem); }
+html[lang="ta"] header a, html[lang="ta"] header button { overflow-wrap: normal; }
+#how-it-works { scroll-margin-top: 4rem; }
+
+/* Keyboard, zoom and motion accessibility */
+:focus-visible { outline: 3px solid #0f766e; outline-offset: 3px; }
+.skip-link { position: fixed; top: -100px; left: 12px; z-index: 1000; background: white; color: #134e4a; padding: 12px 18px; border: 2px solid #0f766e; border-radius: 8px; }
+.skip-link:focus { top: 8px; }
+html[data-large-text="true"] { font-size: 20px; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+}
+@media (forced-colors: active) { button, input, select, textarea { border: 1px solid ButtonText; } }
+
+#faq.landing-section { padding-bottom: 1.5rem; }

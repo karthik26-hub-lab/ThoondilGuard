@@ -1,0 +1,15 @@
+import {useEffect,useState} from 'react';
+import type {ReactNode} from 'react';
+import {Context,load,empty} from './workspaceState';
+import type {Data,Event,Status,Decision,Alert} from './workspaceState';
+import {adminConnected,adminRequest} from './adminApi';
+const blank:Data={reports:[],alerts:[],events:[],groups:{}};
+export function WorkspaceProvider({children}:{children:ReactNode}){const [data,setData]=useState<Data>(()=>adminConnected?blank:load());const [loading,setLoading]=useState(false);const [error,setError]=useState('');
+async function refresh(){if(!adminConnected)return;setLoading(true);setError('');try{const value=await adminRequest('/workspace') as Data;if(!value||!Array.isArray(value.reports)||!Array.isArray(value.alerts)||!Array.isArray(value.events)||!value.groups)throw Error('Invalid workspace response');setData(value);}catch(e){setError(e instanceof Error?e.message:'Could not load workspace');throw e;}finally{setLoading(false);}}
+useEffect(()=>{const reload=()=>{void refresh().catch(()=>{});};const expired=()=>setData(blank);window.addEventListener('thg-admin-login',reload);window.addEventListener('thg-session-expired',expired);return()=>{window.removeEventListener('thg-admin-login',reload);window.removeEventListener('thg-session-expired',expired);};},[]);
+function change(fn:(d:Data)=>Data){setData(d=>{const next=fn(d);sessionStorage.setItem('thg-admin-demo-v1',JSON.stringify(next));return next;});}
+function event(action:string,target:string,note:string):Event{return {id:crypto.randomUUID(),time:new Date().toISOString(),action,target,note};}
+async function saveReport(id:string,status:Status,decision:Decision,notes:string){const effectiveStatus:Status=decision==='Pending'?status:'Closed';if(adminConnected){const report=data.reports.find(r=>r.id===id);await adminRequest('/reports/'+encodeURIComponent(id),'PATCH',{status:effectiveStatus,decision,notes,version:report?.version??0});await refresh().catch(()=>{});return;}change(d=>({...d,reports:d.reports.map(r=>r.id===id?{...r,status:effectiveStatus,decision,notes}:r),events:[event('Saved administrator decision',id,notes),...d.events]}));}
+async function saveAlert(alert:Alert){if(adminConnected){await adminRequest('/alerts/'+encodeURIComponent(alert.id),'PUT',alert);await refresh().catch(()=>{});return;}change(d=>({...d,alerts:[alert,...d.alerts.filter(a=>a.id!==alert.id)],events:[event('Saved alert: '+alert.state,alert.id,alert.title),...d.events]}));}
+async function decideGroup(indicator:string,decision:string,note:string){if(adminConnected){await adminRequest('/groups','PUT',{indicator,decision,note});await refresh().catch(()=>{});return;}change(d=>({...d,groups:{...d.groups,[indicator]:{decision,note}},events:[event('Group decision: '+decision,indicator,note),...d.events]}));}
+return <Context.Provider value={{data,saveReport,saveAlert,decideGroup,refresh,loading,error,reset:()=>{if(adminConnected)throw Error('Reset is unavailable for server records');sessionStorage.removeItem('thg-admin-demo-v1');setData(empty);}}}>{children}</Context.Provider>;}

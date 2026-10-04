@@ -1,0 +1,159 @@
+@import "tailwindcss";
+
+@theme {
+  --color-canvas: #F9F8F6;
+  --color-panel: #FFFFFF;
+  --color-panel-alt: #F4F3F0;
+  --color-text-main: #171827;
+  --color-text-secondary: #52565E;
+  --color-border: #D8D6D1;
+  
+  --color-primary: #0F766E;
+  --color-primary-hover: #115E59;
+  
+  --color-nav-selected: #E7F3F0;
+  
+  --color-status-amber-text: #92400E;
+  --color-status-amber-bg: #FFF4DD;
+  --color-status-red-text: #B42318;
+  --color-status-red-bg: #FEECE9;
+  --color-status-green-text: #166534;
+  --color-status-green-bg: #EAF6EC;
+  
+  --font-sans: 'Inter', 'Noto Sans Tamil', sans-serif;
+  --font-display: 'Manrope', 'Noto Sans Tamil', sans-serif;
+}
+
+@layer base {
+  body {
+    background-color: var(--color-canvas);
+    color: var(--color-text-main);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #A09E9B;
+}
+
+@layer base {
+ body { margin:0; font-size:1rem; line-height:1.5; }
+ html[lang="ta"] { line-height:1.75; }
+ button, a, input, select, textarea { touch-action:manipulation; }
+ button { cursor:pointer; }
+ button:disabled { cursor:not-allowed; opacity:.5; }
+ :focus-visible { outline:3px solid #0f766e; outline-offset:3px; }
+ input:not([type="checkbox"]), select, textarea { min-height:44px; width:100%; border:1px solid #a8a6a0; border-radius:8px; background:white; padding:10px 12px; color:#171827; }
+ textarea { min-height:100px; resize:vertical; }
+ input[type="checkbox"] { width:18px; height:18px; accent-color:#0f766e; }
+}
+@layer components {
+ .primary { display:inline-flex; align-items:center; justify-content:center; gap:8px; min-height:44px; padding:10px 18px; border-radius:8px; background:#0f766e; color:white; font-weight:600; font-size:14px; }
+ .primary:hover:not(:disabled) { background:#115e59; }
+ .secondary { display:inline-flex; align-items:center; justify-content:center; min-height:44px; padding:10px 14px; border:1px solid #a8a6a0; border-radius:8px; background:white; font-size:14px; font-weight:500; }
+ .secondary:hover:not(:disabled) { background:#f4f3f0; }
+ .field { display:flex; flex-direction:column; gap:8px; font-size:14px; font-weight:500; }
+ .skip-link { position:fixed; top:-100px; left:16px; z-index:100; padding:12px; background:white; border:2px solid #0f766e; }
+ .skip-link:focus { top:12px; }
+}
+@media (prefers-reduced-motion:reduce) { *,*::before,*::after { scroll-behavior:auto !important; transition:none !important; animation:none !important; } }
+
+/* Navigation reserves space instead of covering report content. */
+.admin-shell { display:grid; grid-template-columns:244px minmax(0,1fr); transition:grid-template-columns 220ms ease; overflow-x:clip; }
+.admin-sidebar { position:sticky; top:0; height:100dvh; width:244px; overflow:hidden; }
+.admin-content { width:100%; }
+@media (min-width:1024px) { .admin-shell.nav-open { grid-template-columns:244px minmax(0,1fr); } .admin-shell.nav-open .admin-sidebar { visibility:visible; } }
+@media (max-width:1023px) { .admin-shell { grid-template-columns:0 minmax(0,1fr); } .admin-sidebar { visibility:hidden; } .admin-shell.nav-open { grid-template-columns:244px minmax(0,1fr); } .admin-shell.nav-open .admin-sidebar { visibility:visible; } }
+@media (max-width:640px) { .admin-content { width:100vw; } }
+main h1 { letter-spacing:-.025em; }
+main section { box-shadow:0 1px 2px rgba(23,24,39,.025); }
+main table th { font-weight:600; }
+
+/* Administrator visual system: restrained, readable, consistent. */
+@theme { --color-canvas:#F5F6F8; --color-panel-alt:#F8FAFC; --color-border:#E1E5EB; --color-text-main:#182230; --color-text-secondary:#526070; --font-sans:'Segoe UI','Noto Sans Tamil',Arial,sans-serif; --font-display:'Segoe UI','Noto Sans Tamil',Arial,sans-serif; }
+.admin-sidebar { background:#fff; }
+.admin-sidebar nav a { border:0; border-radius:7px; padding:12px 14px; line-height:1.4; }
+.admin-sidebar nav a:hover { background:#f4f6f8; }
+.admin-sidebar nav a[aria-current="page"] { background:#eef1f5; color:#182230; box-shadow:none; }
+.admin-sidebar nav svg { width:18px; height:18px; }
+.admin-panel { box-shadow:0 1px 3px rgba(16,24,40,.025); }
+.page-heading h1 { letter-spacing:-.025em; }
+.metric-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:16px; }
+.metric-card { background:#fff; border:1px solid #e1e5eb; border-radius:12px; padding:22px; }
+.metric-card h2 { color:#526070; font-size:13px; font-weight:500; }
+.metric-card p { margin:14px 0 12px; font-size:32px; font-weight:600; line-height:1; font-variant-numeric:tabular-nums; }
+.metric-card span { color:#0f766e; font-size:12px; font-weight:600; }
+.metric-card:hover { border-color:#a8b9bd; }
+.review-row { display:block; padding:20px 0; border-bottom:1px solid #e7eaee; }
+.review-row:last-child { border-bottom:0; }
+.review-row:hover { background:#f8fafc; }
+.action-row { display:flex; align-items:center; justify-content:space-between; gap:12px; min-height:48px; padding:10px 0; border-bottom:1px solid #edf0f3; font-size:14px; }
+.action-row:last-child { border-bottom:0; }
+.action-row:hover { color:#0f766e; }
+.primary,.secondary { border-radius:7px; }
+main table thead { background:#f8fafc; color:#526070; }
+main table td,main table th { padding:16px; }
+@media(max-width:1200px) { .metric-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media(max-width:480px) { .metric-grid { gap:10px; } .metric-card { padding:16px; } }
+
+/* Larger operational text and breathing room. */
+html { font-size:18px; }
+body { font-size:1rem; }
+.admin-shell { grid-template-columns:272px minmax(0,1fr); }
+.admin-sidebar { width:272px; }
+.admin-sidebar nav a { font-size:16px; padding:15px 16px; min-height:52px; }
+.admin-content header { min-height:88px; gap:20px; }
+.admin-content header input { font-size:16px; }
+.admin-panel { padding:26px; }
+.admin-panel h2 { font-size:19px; }
+.page-heading h1 { font-size:34px; }
+.page-heading p { font-size:16px; max-width:760px; line-height:1.65; }
+.metric-card h2 { font-size:16px; }
+.metric-card p { font-size:38px; }
+.metric-card span { font-size:14px; }
+.review-row { padding:24px 0; }
+.review-row .text-sm { font-size:16px; }
+.review-row .text-xs { font-size:14px; }
+.action-row { font-size:16px; min-height:56px; }
+.field,.primary,.secondary,main table { font-size:16px; }
+main .text-xs { font-size:13px; }
+@media(min-width:1024px) { .admin-shell.nav-open { grid-template-columns:272px minmax(0,1fr); } }
+@media(max-width:1023px) { .admin-shell { grid-template-columns:0 minmax(0,1fr); } .admin-shell.nav-open { grid-template-columns:272px minmax(0,1fr); } }
+@media(max-width:640px) { .admin-panel { padding:20px; } }
+
+@media(min-width:1200px) {
+ .reports-table { table-layout:fixed; font-size:14px; }
+ .reports-table th,.reports-table td { padding:14px 9px; vertical-align:top; overflow-wrap:anywhere; white-space:normal; }
+ .reports-table th { font-size:13px; line-height:1.5; }
+ .reports-table .secondary { padding:8px 9px; min-height:40px; font-size:13px; width:100%; }
+ .reports-table .rounded-full { white-space:normal; line-height:1.45; }
+ .reports-filters { grid-template-columns:repeat(5,minmax(0,1fr)); gap:14px; padding:20px; }
+ .reports-filters .field { font-size:14px; gap:6px; }
+ .reports-filters input,.reports-filters select { padding:8px 10px; font-size:14px; }
+}
+
+@media(min-width:1200px) {
+ .reports-table th,.reports-table td { overflow-wrap:normal; hyphens:none; }
+ .reports-table thead th { white-space:normal; overflow-wrap:normal; padding-inline:7px; }
+ .reports-table td:nth-child(5),.reports-table td:nth-child(6) { white-space:nowrap; }
+ .reports-table td:nth-child(3) { overflow-wrap:anywhere; }
+ .reports-table .secondary { word-break:normal; overflow-wrap:normal; }
+}

@@ -1,0 +1,23 @@
+# ThoondilGuard administrator handoff
+
+This is an isolated frontend demo, not a secure admin service. Preview sets a browser session flag solely to review the interface. Server-backed login, session expiry, authentication and administrator authorisation must protect every report, grouping, alert and history request before real data is used. Never trust this route guard or bundle admin credentials in the client. One role: Administrator.
+
+## Replace the demo boundary
+`src/lib/workspaceState.ts` defines fixtures/types and `src/lib/workspace.tsx` owns state/actions for reports, decisions, alert drafts, group decisions and history. Replace this context's sessionStorage implementation with typed API requests and authoritative backend responses. Do not silently fall back to fixtures on a live API failure. The login form is intentionally disabled until authentication is wired.
+
+Required contracts (agree actual endpoints with backend team): list/report detail with pagination and query/date/language/area/channel/status filters; save administrator decision, notes and workflow with version/conflict check; candidate groups and reasoned confirm/reject; alert drafts, preview, publish and withdraw; paginated server audit history; integration health. Prefer cookie-backed secure sessions or the team's approved authentication scheme. Frontend settings must never hold database secrets. Errors must preserve edits.
+
+Report workflow: New / In progress / Closed. Separate administrator decision: Pending / Suspicious / Insufficient evidence / No concern identified. Assessment and administrator decision are distinct. Residents receive only a safe tracking status through their separate reference + private key service. Never return administrator notes, audit records or access keys to the public portal.
+
+Publication requires bilingual guidance, title, area, safe next step, future expiry and supporting reports reviewed as Suspicious. Backend repeats validation, authorisation and concurrency checks, handles expiry, removes private fields and records audit events. Demo publication does not notify residents or represent official approval. Candidate indicator matches are not proof of a campaign.
+
+Local demo actions persist only in the browser session. History is an illustrative event list, not an immutable audit log. Sample metrics derive from the same five fixture reports. No third-party reputation lookup, live detector, device telemetry, notifications or government integration is claimed. Browser extension is a resident-side developer build, not an admin scanner.
+
+Accessibility features include keyboard controls, visible focus, labelled fields, responsive navigation, text-labelled states and Tamil line height. No GIGW/STQC certification is claimed. Fonts currently use system fallbacks if Manrope/Inter/Noto Sans Tamil are not installed; bundle approved font assets before Windows packaging. Keep this app separate from the public portal. Tauri packaging is a later step after workflow review.
+
+## Structured review assistant
+Report details now prepare a deterministic review brief from the supplied record: summary, supplied findings, indicator-related references, missing verification evidence and an administrator checklist. Adding the brief creates editable notes only; it never saves a decision or publishes an alert. Source type is `provided-record`, not independent verification. No pretrained model or generative API is used.
+
+Proposed future POST /admin/reports/:id/review-brief should return typed reportId, reportVersion, source, generatedAt, summary, findings with supporting evidence references, indicators, relatedIds, missing and checks. Authenticate and authorize server-side, validate returned references, respect masking, provide timeout/retry errors, and reject outdated report versions. Never silently substitute local examples for failed live requests. Reputation/official-source checks must include source, retrieval date and unknown/error status. A submitted report must be treated as untrusted data, never instructions to an assistant. Keep credentials, private contact and tracking keys out of model payloads. Administrator alone decides and publishes.
+
+Integration readiness: replace workspace.tsx state operations with asynchronous authoritative responses; loading/error/empty/pagination states for lists; preserve unsaved notes on errors; disable repeat actions while pending; report-version conflict resolution; real auth and session expiry; safe public tracking statuses; server-side publish validation; immutable server audit; public-data-only resident intelligence feed. Current preview authentication, records and local saving remain interface fixtures.

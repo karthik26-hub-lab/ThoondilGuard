@@ -1,0 +1,23 @@
+{
+  "manifest_version": 3,
+  "name": "ThoondilGuard \u2014 Manual page check",
+  "version": "0.1.0",
+  "description": "Capture a page only when you ask, then review extracted text in ThoondilGuard.",
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "storage"
+  ],
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "externally_connectable": {
+    "matches": [
+      "http://*/*",
+      "https://*/*"
+    ]
+  }
+}

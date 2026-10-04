@@ -1,0 +1,6 @@
+# ThoondilGuard extension (Chrome / Edge desktop)
+Extract the ZIP. Open chrome://extensions or edge://extensions, enable Developer mode and Load unpacked; select this folder. No store listing is claimed. Set the portal origin in the popup to the actual deployed site or local preview URL. Pin the extension, visit a normal website and click Check this page. Only this manual action grants access to the active page.
+
+Capture scrolls and stitches the rendered page, restoring the original position. Limits: 24 viewports, 16,000 CSS pixels, 40 megapixels, 24 seconds; taller pages are marked partial. Sticky content may repeat; internal browser pages, embedded scrollers and infinite-scroll sites are not guaranteed. Keep the page active. Portal OCR uses bundled worker and language assets from the portal; errors allow manual text entry. OCR is English-only for this first build. Bilingual interface does not imply Tamil OCR support.
+
+Screenshots transfer only to the configured portal origin and specific destination tab using a short-lived, single-use token. The portal runs OCR on the device; analysis uses the existing connector (local demo until backend configured). Raw images are not uploaded to analysis. Expired payloads are cleaned on browser startup. Backend reporting/feedback integration remains teammate work. Use an HTTPS production origin before distribution.
